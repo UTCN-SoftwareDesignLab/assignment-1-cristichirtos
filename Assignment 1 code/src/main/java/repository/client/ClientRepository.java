@@ -1,4 +1,4 @@
-package repository;
+package repository.client;
 
 import model.entity.Client;
 
@@ -10,7 +10,11 @@ public interface ClientRepository {
 
     Client findById(Long id);
 
+    boolean update(Client client);
+
     boolean save(Client client);
 
-    void removeAll();
+    void deleteClient(Long id);
+
+    void deleteAll();
 }

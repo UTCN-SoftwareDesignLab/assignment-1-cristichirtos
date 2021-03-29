@@ -1,18 +1,21 @@
 package database;
 
 import repository.security.RightsRolesRepository;
+import repository.security.RightsRolesRepositoryMySQL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static database.Constants.Rights.RIGHTS;
 import static database.Constants.Roles.ROLES;
 import static database.Constants.Schemas.SCHEMAS;
 import static database.Constants.getRolesRights;
 
-public class Bootstraper {
+public class Bootstrapper {
 
     private RightsRolesRepository rightsRolesRepository;
 
@@ -35,7 +38,7 @@ public class Bootstraper {
                     "TRUNCATE `role_right`;",
                     "DROP TABLE `role_right`;",
                     "TRUNCATE `right`;",
-                    "DROP TABLE `right`;"
+                    "DROP TABLE `right`;",
                     "TRUNCATE `user_role`;",
                     "DROP TABLE `user_role`;",
                     "TRUNCATE `role`;",
@@ -80,16 +83,16 @@ public class Bootstraper {
             System.out.println("Bootstrapping user data for " + schema);
 
             JDBConnectionWrapper connectionWrapper = new JDBConnectionWrapper(schema);
-            //rightsRolesRepository = new RightsRolesRepositoryMySQL(connectionWrapper.getConnection());
+            rightsRolesRepository = new RightsRolesRepositoryMySQL(connectionWrapper.getConnection());
 
-          //  bootstrapRoles();
-            //bootstrapRights();
-            //bootstrapRoleRight();
+            bootstrapRoles();
+            bootstrapRights();
+            bootstrapRoleRight();
             bootstrapUserRoles();
         }
     }
 
-    /*private void bootstrapRoles() {
+    private void bootstrapRoles() {
         for (String role : ROLES) {
             rightsRolesRepository.addRole(role);
         }
@@ -113,7 +116,7 @@ public class Bootstraper {
                 rightsRolesRepository.addRoleRight(roleId, rightId);
             }
         }
-    }*/
+    }
 
     private void bootstrapUserRoles() {
 
