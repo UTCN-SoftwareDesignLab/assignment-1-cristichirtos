@@ -13,6 +13,11 @@ public class UserBuilder {
         user = new User();
     }
 
+    public UserBuilder setId(Long id) {
+        user.setId(id);
+        return this;
+    }
+
     public UserBuilder setEmail(String email) {
         user.setEmail(email);
         return this;

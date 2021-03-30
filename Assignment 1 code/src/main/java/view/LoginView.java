@@ -1,5 +1,7 @@
 package view;
 
+import model.DTO.CredentialsDTO;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -33,12 +35,8 @@ public class LoginView extends JFrame {
         btnRegister = new JButton("Register");
     }
 
-    public String getEmail() {
-        return tfEmail.getText();
-    }
-
-    public String getPassword() {
-        return tfPassword.getText();
+    public CredentialsDTO getCredentialsDTO() {
+        return new CredentialsDTO(tfEmail.getText(), tfPassword.getText());
     }
 
     public void setLoginButtonListener(ActionListener loginButtonListener) {

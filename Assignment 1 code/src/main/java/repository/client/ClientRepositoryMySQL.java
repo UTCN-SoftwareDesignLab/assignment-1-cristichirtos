@@ -1,6 +1,6 @@
 package repository.client;
 
-import database.JDBConnectionWrapper;
+import model.DTO.ClientDTO;
 import model.builder.ClientBuilder;
 import model.entity.Client;
 
@@ -59,18 +59,37 @@ public class ClientRepositoryMySQL implements ClientRepository {
     }
 
     @Override
-    public boolean save(Client client) {
+    public Client findByPersonalNumericalCode(Long personalNumericalCode) {
+        String sql = "Select * from " + CLIENT + " where personalNumericalCode = " + personalNumericalCode;
+
+        Client foundClient = null;
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                foundClient = getClientFromResultSet(resultSet);
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
+        return foundClient;
+    }
+
+    @Override
+    public boolean save(ClientDTO clientDTO) {
         String sql = "INSERT INTO " + CLIENT + " values (null, ?, ?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement insertStatement = connection
                     .prepareStatement(sql);
-            insertStatement.setString(1, client.getName());
-            insertStatement.setString(2, client.getIdentityCardNumber());
-            insertStatement.setLong(3, client.getPersonalNumericalCode());
-            insertStatement.setString(4, client.getAddress());
-            insertStatement.setString(5, client.getPhoneNumber());
-            insertStatement.setDate(6, new java.sql.Date(client.getCreationTimestamp().toEpochDay()));
+            insertStatement.setString(1, clientDTO.getName());
+            insertStatement.setString(2, clientDTO.getIdentityCardNumber());
+            insertStatement.setLong(3, clientDTO.getPersonalNumericalCode());
+            insertStatement.setString(4, clientDTO.getAddress());
+            insertStatement.setString(5, clientDTO.getPhoneNumber());
+            insertStatement.setDate(6, java.sql.Date.valueOf(LocalDate.now()));
             insertStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -99,14 +118,16 @@ public class ClientRepositoryMySQL implements ClientRepository {
     }
 
     @Override
-    public void deleteClient(Long id) {
+    public boolean deleteClient(Long id) {
         String sql = "DELETE from " + CLIENT + " where id = " + id;
 
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
+            return true;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            return false;
         }
     }
 
@@ -130,7 +151,7 @@ public class ClientRepositoryMySQL implements ClientRepository {
                 .setPersonalNumericalCode(rs.getLong("personalNumericalCode"))
                 .setAddress(rs.getString("address"))
                 .setPhoneNumber(rs.getString("phoneNumber"))
-                .setCreationTimestamp(LocalDate.ofEpochDay(rs.getDate("creationTimestamp").getTime()))
+                .setCreationTimestamp(rs.getDate("creationTimestamp").toLocalDate())
                 .build();
     }
 }

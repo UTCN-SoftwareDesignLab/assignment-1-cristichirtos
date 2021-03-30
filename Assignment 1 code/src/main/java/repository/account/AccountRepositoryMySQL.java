@@ -1,10 +1,8 @@
 package repository.account;
 
-import database.JDBConnectionWrapper;
+import model.DTO.TransferDTO;
 import model.builder.AccountBuilder;
-import model.builder.ClientBuilder;
 import model.entity.Account;
-import model.entity.Client;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -89,7 +87,7 @@ public class AccountRepositoryMySQL implements AccountRepository {
             insertStatement.setLong(1, account.getClientId());
             insertStatement.setString(2, account.getType().name());
             insertStatement.setLong(3, account.getBalance());
-            insertStatement.setDate(4, new java.sql.Date(account.getCreationTimestamp().toEpochDay()));
+            insertStatement.setDate(4, java.sql.Date.valueOf(LocalDate.now()));
             insertStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -115,18 +113,18 @@ public class AccountRepositoryMySQL implements AccountRepository {
     }
 
     @Override
-    public boolean transferMoney(Long idSenderAccount, Long idReceiverAccount, Long amount) {
+    public boolean transferMoney(TransferDTO transferDTO) {
         String sql = "UPDATE " + ACCOUNT + " SET balance = ( case when id = ? then balance - ? when id = ? then balance + ? end) " +
                 "WHERE id in (?, ?)";
 
         try {
             PreparedStatement insertStatement = connection.prepareStatement(sql);
-            insertStatement.setLong(1, idSenderAccount);
-            insertStatement.setLong(2, amount);
-            insertStatement.setLong(3, idReceiverAccount);
-            insertStatement.setLong(4, amount);
-            insertStatement.setLong(5, idSenderAccount);
-            insertStatement.setLong(6, idReceiverAccount);
+            insertStatement.setLong(1, transferDTO.getSenderAccountId());
+            insertStatement.setLong(2, Long.parseLong(transferDTO.getAmount()));
+            insertStatement.setLong(3, transferDTO.getReceiverAccountId());
+            insertStatement.setLong(4, Long.parseLong(transferDTO.getAmount()));
+            insertStatement.setLong(5, transferDTO.getSenderAccountId());
+            insertStatement.setLong(6, transferDTO.getReceiverAccountId());
             insertStatement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -135,14 +133,30 @@ public class AccountRepositoryMySQL implements AccountRepository {
     }
 
     @Override
-    public void deleteAccount(Long id) {
+    public boolean deleteAccount(Long id) {
         String sql = "DELETE from " + ACCOUNT + " where id = " + id;
 
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);
+            return true;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteByClientId(Long clientId) {
+        String sql = "DELETE from " + ACCOUNT + " where clientId = " + clientId;
+
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+            return true;
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+            return false;
         }
     }
 
@@ -164,7 +178,7 @@ public class AccountRepositoryMySQL implements AccountRepository {
                 .setClientId(rs.getLong("clientId"))
                 .setType(Account.Type.valueOf(rs.getString("type")))
                 .setBalance(rs.getLong("balance"))
-                .setCreationTimestamp(LocalDate.ofEpochDay(rs.getDate("creationTimestamp").getTime()))
+                .setCreationTimestamp(rs.getDate("creationTimestamp").toLocalDate())
                 .build();
     }
 }

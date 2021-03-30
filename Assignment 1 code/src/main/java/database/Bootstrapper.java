@@ -42,7 +42,7 @@ public class Bootstrapper {
                     "TRUNCATE `user_role`;",
                     "DROP TABLE `user_role`;",
                     "TRUNCATE `role`;",
-                    "DROP TABLE  `client`, `role`, `account`, `user`;"
+                    "DROP TABLE  `client`, `role`, `account`, `user`, `activity`;"
             };
 
             Arrays.stream(dropStatements).forEach(dropStatement -> {
@@ -54,7 +54,7 @@ public class Bootstrapper {
             });
         }
 
-        System.out.println("Done table bootstrap");
+        System.out.println("Done table drop");
     }
 
     private void bootstrapTables() throws SQLException {
@@ -70,8 +70,12 @@ public class Bootstrapper {
             Statement statement = connection.createStatement();
 
             for (String table : Constants.Tables.ORDERED_TABLES_FOR_CREATION) {
-                String createTableSQL = sqlTableCreationFactory.getCreateSQLForTable(table);
-                statement.execute(createTableSQL);
+                try {
+                    String createTableSQL = sqlTableCreationFactory.getCreateSQLForTable(table);
+                    statement.execute(createTableSQL);
+                } catch(SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -85,10 +89,14 @@ public class Bootstrapper {
             JDBConnectionWrapper connectionWrapper = new JDBConnectionWrapper(schema);
             rightsRolesRepository = new RightsRolesRepositoryMySQL(connectionWrapper.getConnection());
 
-            bootstrapRoles();
-            bootstrapRights();
-            bootstrapRoleRight();
-            bootstrapUserRoles();
+            try {
+                bootstrapRoles();
+                bootstrapRights();
+                bootstrapRoleRight();
+                bootstrapUserRoles();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package repository.account;
 
+import model.DTO.TransferDTO;
 import model.entity.Account;
 
 import java.util.List;
@@ -16,9 +17,11 @@ public interface AccountRepository {
 
     boolean update(Account account);
 
-    boolean transferMoney(Long idSenderAccount, Long idReceiverAccount, Long amount);
+    boolean transferMoney(TransferDTO transferDTO);
 
-    void deleteAccount(Long id);
+    boolean deleteAccount(Long id);
+
+    boolean deleteByClientId(Long clientId);
 
     void deleteAll();
 }

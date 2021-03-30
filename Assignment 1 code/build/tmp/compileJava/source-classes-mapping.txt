@@ -1,0 +1,21 @@
+model/entity/Client.java
+ model.entity.Client
+model/builder/ClientBuilder.java
+ model.builder.ClientBuilder
+database/JDBConnectionWrapper.java
+ database.JDBConnectionWrapper
+repository/client/ClientRepositoryMySQL.java
+ repository.client.ClientRepositoryMySQL
+repository/client/ClientRepository.java
+ repository.client.ClientRepository
+database/DatabaseConnectionFactory.java
+ database.DatabaseConnectionFactory
+model/builder/AccountBuilder.java
+ model.builder.AccountBuilder
+model/entity/Account.java
+ model.entity.Account
+ model.entity.Account$Type
+repository/account/AccountRepository.java
+ repository.account.AccountRepository
+repository/account/AccountRepositoryMySQL.java
+ repository.account.AccountRepositoryMySQL

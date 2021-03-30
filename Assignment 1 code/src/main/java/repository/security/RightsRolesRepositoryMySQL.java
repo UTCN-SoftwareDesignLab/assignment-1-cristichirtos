@@ -22,7 +22,7 @@ public class RightsRolesRepositoryMySQL implements RightsRolesRepository {
     public void addRole(String role) {
         try {
             PreparedStatement insertStatement = connection
-                    .prepareStatement("INSERT IGNORE INTO " + ROLE + " values (null, ?)");
+                    .prepareStatement("INSERT INTO " + ROLE + " values (null, ?)");
             insertStatement.setString(1, role);
             insertStatement.executeUpdate();
         } catch (SQLException e) {
@@ -56,6 +56,7 @@ public class RightsRolesRepositoryMySQL implements RightsRolesRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -72,6 +73,7 @@ public class RightsRolesRepositoryMySQL implements RightsRolesRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 

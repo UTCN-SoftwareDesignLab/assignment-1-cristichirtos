@@ -1,5 +1,6 @@
 package repository.client;
 
+import model.DTO.ClientDTO;
 import model.entity.Client;
 
 import java.util.List;
@@ -10,11 +11,13 @@ public interface ClientRepository {
 
     Client findById(Long id);
 
+    Client findByPersonalNumericalCode(Long personalNumericalCode);
+
     boolean update(Client client);
 
-    boolean save(Client client);
+    boolean save(ClientDTO clientDTO);
 
-    void deleteClient(Long id);
+    boolean deleteClient(Long id);
 
     void deleteAll();
 }

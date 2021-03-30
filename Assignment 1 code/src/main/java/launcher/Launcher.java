@@ -16,7 +16,6 @@ public class Launcher {
         componentFactory.getLoginView().setVisible(true);
     }
 
-
     private static void bootstrap() {
         if (BOOTSTRAP) {
             try {

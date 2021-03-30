@@ -1,5 +1,6 @@
 package service.user;
 
+import model.DTO.CredentialsDTO;
 import model.builder.UserBuilder;
 import model.entity.Role;
 import model.entity.User;
@@ -25,11 +26,11 @@ public class AuthenticationServiceMySQL implements AuthenticationService {
     }
 
     @Override
-    public Notification<Boolean> register(String email, String password) {
+    public Notification<Boolean> register(CredentialsDTO credentialsDTO) {
         Role employeeRole = rightsRolesRepository.findRoleByTitle(EMPLOYEE);
         User user = new UserBuilder()
-                .setEmail(email)
-                .setPassword(password)
+                .setEmail(credentialsDTO.getEmail())
+                .setPassword(credentialsDTO.getPassword())
                 .setRoles(Collections.singletonList(employeeRole))
                 .build();
 
@@ -41,15 +42,15 @@ public class AuthenticationServiceMySQL implements AuthenticationService {
             userValidator.getErrors().forEach(userRegisterNotification::addError);
             userRegisterNotification.setResult(Boolean.FALSE);
         } else {
-            user.setPassword(encodePassword(password));
+            user.setPassword(encodePassword(credentialsDTO.getPassword()));
             userRegisterNotification.setResult(userRepository.save(user));
         }
         return userRegisterNotification;
     }
 
     @Override
-    public Notification<User> login(String username, String password) {
-        return userRepository.findByEmailAndPassword(username, encodePassword(password));
+    public Notification<User> login(CredentialsDTO credentialsDTO) {
+        return userRepository.findByEmailAndPassword(credentialsDTO.getEmail(), encodePassword(credentialsDTO.getPassword()));
     }
 
     private String encodePassword(String password) {

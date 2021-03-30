@@ -16,7 +16,8 @@ public class SQLTableCreationFactory {
                         "  phoneNumber char(10) NOT NULL," +
                         "  creationTimestamp datetime DEFAULT NULL," +
                         "  PRIMARY KEY (id)," +
-                        "  UNIQUE KEY id_UNIQUE (id)" +
+                        "  UNIQUE KEY id_UNIQUE (id)," +
+                        "  UNIQUE KEY personalNumericalCode_UNIQUE (personalNumericalCode)" +
                         ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;";
 
             case ACCOUNT:
@@ -28,6 +29,7 @@ public class SQLTableCreationFactory {
                         "  creationTimestamp datetime DEFAULT NULL," +
                         "  PRIMARY KEY(id)," +
                         "  UNIQUE KEY id_UNIQUE(id)," +
+                        "  UNIQUE KEY clientId_UNIQUE(clientId)," +
                         "  CONSTRAINT clientId" +
                         "  FOREIGN KEY(clientId) REFERENCES client(id)" +
                         "  ON DELETE CASCADE" +
@@ -42,6 +44,18 @@ public class SQLTableCreationFactory {
                         "  UNIQUE INDEX id_UNIQUE (id ASC)," +
                         "  UNIQUE INDEX username_UNIQUE (email ASC));";
 
+            case ACTIVITY:
+                return "CREATE TABLE IF NOT EXISTS activity (" +
+                        "  id int(11) NOT NULL AUTO_INCREMENT," +
+                        "  employeeId int(11) NOT NULL," +
+                        "  text varchar(500) NOT NULL," +
+                        "  timestamp datetime DEFAULT NULL," +
+                        "  PRIMARY KEY (id)," +
+                        "  UNIQUE KEY id_UNIQUE (id)," +
+                        "  CONSTRAINT employeeId" +
+                        "  FOREIGN KEY(employeeId) REFERENCES user(id)" +
+                        "  ON DELETE CASCADE" +
+                        ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;";
             case ROLE:
                 return "CREATE TABLE IF NOT EXISTS role (" +
                         "  id INT NOT NULL AUTO_INCREMENT," +
