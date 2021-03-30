@@ -3,8 +3,6 @@ package repository.user;
 import model.entity.User;
 import model.validation.Notification;
 
-import java.util.List;
-
 public interface UserRepository {
 
     Notification<User> findByEmailAndPassword(String username, String password);
@@ -12,4 +10,10 @@ public interface UserRepository {
     boolean save(User user);
 
     void removeAll();
+
+    Notification<User> findByEmail(String email);
+
+    Boolean update(String email, String password);
+
+    Notification<Boolean> delete(String email);
 }

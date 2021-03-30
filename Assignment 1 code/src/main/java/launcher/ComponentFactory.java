@@ -1,5 +1,6 @@
 package launcher;
 
+import controller.AdministratorController;
 import controller.EmployeeController;
 import controller.LoginController;
 import database.DatabaseConnectionFactory;
@@ -22,6 +23,7 @@ import service.client.ClientService;
 import service.client.ClientServiceMySQL;
 import service.user.AuthenticationService;
 import service.user.AuthenticationServiceMySQL;
+import view.AdministratorView;
 import view.EmployeeView;
 import view.LoginView;
 
@@ -33,11 +35,11 @@ public class ComponentFactory {
 
     private final LoginView loginView;
     private final EmployeeView employeeView;
-    //private final AdministratorView administratorView;
+    private final AdministratorView administratorView;
 
     private final LoginController loginController;
     private final EmployeeController employeeController;
-    //private final AdministratorController administratorController;
+    private final AdministratorController administratorController;
 
     private final AuthenticationService authenticationService;
     private final ClientService clientService;
@@ -75,11 +77,12 @@ public class ComponentFactory {
 
         this.loginView = new LoginView();
         this.employeeView = new EmployeeView();
+        this.administratorView = new AdministratorView();
 
         this.loginController = new LoginController(loginView, authenticationService, authentication);
         this.employeeController = new EmployeeController(employeeView, accountService, clientService, activityService, authentication);
+        this.administratorController = new AdministratorController(administratorView, authenticationService, activityService);
     }
-
 
     public LoginView getLoginView() {
         return loginView;
@@ -89,8 +92,7 @@ public class ComponentFactory {
         return employeeView;
     }
 
-   /*public AdministratorView getAdministratorView() {
+    public AdministratorView getAdministratorView() {
         return administratorView;
    }
-    */
 }

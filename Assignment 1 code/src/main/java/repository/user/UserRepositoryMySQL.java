@@ -6,7 +6,6 @@ import model.validation.Notification;
 import repository.security.RightsRolesRepository;
 
 import java.sql.*;
-import java.util.List;
 
 import static database.Constants.Tables.*;
 
@@ -79,5 +78,61 @@ public class UserRepositoryMySQL implements UserRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Notification<User> findByEmail(String email) {
+        Notification<User> findByEmail = new Notification<>();
+        try {
+            Statement statement = connection.createStatement();
+            String fetchUserSql = "Select * from `" + USER + "` where `email`=\'" + email + "\'";
+            ResultSet userResultSet = statement.executeQuery(fetchUserSql);
+            if (userResultSet.next()) {
+                User user = new UserBuilder()
+                        .setId(userResultSet.getLong("id"))
+                        .setEmail(userResultSet.getString("email"))
+                        .setPassword(userResultSet.getString("password"))
+                        .setRoles(rightsRolesRepository.findRolesForUser(userResultSet.getLong("id")))
+                        .build();
+                findByEmail.setResult(user);
+            } else {
+                findByEmail.addError("Failed to retrieve user.");
+            }
+            return findByEmail;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            findByEmail.addError("Something is wrong with the Database");
+        }
+        return findByEmail;
+    }
+
+    @Override
+    public Boolean update(String email, String password) {
+        String sql = "UPDATE " + USER + " SET password = ? WHERE email = ?";
+        try {
+            PreparedStatement insertStatement = connection.prepareStatement(sql);
+            insertStatement.setString(1, password);
+            insertStatement.setString(2, email);
+            insertStatement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+           return false;
+        }
+    }
+
+    @Override
+    public Notification<Boolean> delete(String email) {
+        Notification<Boolean> deleteUser = new Notification<>();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "DELETE from `" + USER + "` where `email`=\'" + email + "\'";
+            statement.executeUpdate(sql);
+            deleteUser.setResult(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            deleteUser.addError("Failed to delete user.");
+        }
+        return deleteUser;
     }
 }

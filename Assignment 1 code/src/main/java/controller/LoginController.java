@@ -44,6 +44,8 @@ public class LoginController {
                 loginView.setVisible(false);
                 if (loginNotification.getResult().getRoles().get(0).getRole().equals(EMPLOYEE)) {
                     ComponentFactory.instance(false).getEmployeeView().setVisible(true);
+                } else {
+                    ComponentFactory.instance(false).getAdministratorView().setVisible(true);
                 }
             }
         }

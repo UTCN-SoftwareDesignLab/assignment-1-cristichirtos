@@ -1,6 +1,7 @@
 package repository.activity;
 
 import model.DTO.ActivityDTO;
+import model.DTO.ReportDTO;
 import model.builder.ActivityBuilder;
 import model.entity.Activity;
 
@@ -37,8 +38,8 @@ public class ActivityRepositoryMySQL implements ActivityRepository {
     }
 
     @Override
-    public List<Activity> getAllByEmployeeId(Long employeeId) {
-        String sql = "Select * from " + ACTIVITY + " WHERE employeeId = " + employeeId;
+    public List<Activity> getActivities(ReportDTO reportDTO) {
+        String sql = "Select * from " + ACTIVITY + " WHERE employeeId = \'" + reportDTO.getEmployeeId() + "\'";
 
         List<Activity> activitiesByEmployee = new ArrayList<>();
 
@@ -51,7 +52,7 @@ public class ActivityRepositoryMySQL implements ActivityRepository {
                         .setId(resultSet.getLong("id"))
                         .setEmployeeId(resultSet.getLong("employeeId"))
                         .setText(resultSet.getString("text"))
-                        .setTimestamp(resultSet.getDate("creationTimestamp").toLocalDate())
+                        .setTimestamp(resultSet.getDate("timestamp").toLocalDate())
                         .build();
                 activitiesByEmployee.add(activity);
             }

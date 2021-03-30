@@ -53,6 +53,46 @@ public class AuthenticationServiceMySQL implements AuthenticationService {
         return userRepository.findByEmailAndPassword(credentialsDTO.getEmail(), encodePassword(credentialsDTO.getPassword()));
     }
 
+    @Override
+    public Notification<User> findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public Notification<Boolean> updateUser(CredentialsDTO credentialsDTO) {
+        Notification<Boolean> notification = new Notification<>();
+        Notification<User> userNotification = findUserByEmail(credentialsDTO.getEmail());
+        if (userNotification.hasErrors()) {
+            notification.addError(userNotification.getFormattedErrors());
+            return notification;
+        }
+        User user = userNotification.getResult();
+        user.setPassword(credentialsDTO.getPassword());
+        UserValidator userValidator = new UserValidator(user);
+        boolean userValid = userValidator.validate();
+        Notification<Boolean> userRegisterNotification = new Notification<>();
+
+        if (!userValid) {
+            userValidator.getErrors().forEach(userRegisterNotification::addError);
+            userRegisterNotification.setResult(Boolean.FALSE);
+        } else {
+            userRegisterNotification.setResult(userRepository.update(user.getEmail(), encodePassword(user.getPassword())));
+        }
+        return userRegisterNotification;
+    }
+
+    @Override
+    public Notification<Boolean> deleteUser(String email) {
+        return userRepository.delete(email);
+    }
+
+    @Override
+    public String getStringFromUser(User user) {
+        return "User id: " + user.getId() +
+                "\nUser email: " + user.getEmail() +
+                "\nUser role: " + user.getRoles().get(0).getRole();
+    }
+
     private String encodePassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
