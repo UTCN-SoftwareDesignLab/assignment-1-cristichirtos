@@ -2,6 +2,8 @@ package repository;
 
 import database.DatabaseConnectionFactory;
 import database.JDBConnectionWrapper;
+import model.DTO.ClientDTO;
+import model.DTO.TransferDTO;
 import model.builder.AccountBuilder;
 import model.builder.ClientBuilder;
 import model.entity.Account;
@@ -28,15 +30,8 @@ public class AccountRepositoryMySQLTest {
         JDBConnectionWrapper connectionWrapper = new DatabaseConnectionFactory().getConnectionWrapper(true);
         repository = new AccountRepositoryMySQL(connectionWrapper.getConnection());
         clientRepository = new ClientRepositoryMySQL(connectionWrapper.getConnection());
-        Client randomClient = new ClientBuilder()
-                .setName("Gigel")
-                .setIdentityCardNumber("CJ112112")
-                .setPersonalNumericalCode(1651021455123L)
-                .setAddress("In your heart")
-                .setPhoneNumber("0742589216")
-                .setCreationTimestamp(LocalDate.now())
-                .build();
-        clientRepository.save(randomClient);
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
+        clientRepository.save(clientDTO);
     }
 
     @Before
@@ -70,6 +65,61 @@ public class AccountRepositoryMySQLTest {
     }
 
     @Test
+    public void findByClientId() {
+        Long id = clientRepository.findAll().get(0).getId();
+        Account account = new AccountBuilder()
+                .setType(Account.Type.CURRENT)
+                .setClientId(id)
+                .setBalance(1000L)
+                .setCreationTimestamp(LocalDate.now())
+                .build();
+        repository.save(account);
+        Assert.assertNotNull(repository.findByClientId(id));
+    }
+
+    @Test
+    public void transferMoney() {
+        ClientDTO clientDTO = new ClientDTO("Gigelus", 1881125123456L, "CJ112112", "here", "0745378559");
+        clientRepository.save(clientDTO);
+        Long senderPNC = 1991125123456L;
+        Long receiverPNC = 1881125123456L;
+        Long senderId = clientRepository.findByPersonalNumericalCode(senderPNC).getId();
+        Long receiverId = clientRepository.findByPersonalNumericalCode(receiverPNC).getId();
+        Long amount = 500L;
+        Account account = new AccountBuilder()
+                .setType(Account.Type.CURRENT)
+                .setClientId(senderId)
+                .setBalance(1000L)
+                .setCreationTimestamp(LocalDate.now())
+                .build();
+        repository.save(account);
+        Account accountReceiver = new AccountBuilder()
+                .setType(Account.Type.CURRENT)
+                .setClientId(receiverId)
+                .setBalance(2000L)
+                .setCreationTimestamp(LocalDate.now())
+                .build();
+        repository.save(accountReceiver);
+        TransferDTO transferDTO = new TransferDTO(amount.toString(), senderPNC.toString(), receiverPNC.toString());
+        transferDTO.setSenderAccountId(senderId);
+        transferDTO.setReceiverAccountId(receiverId);
+        Assert.assertTrue(repository.transferMoney(transferDTO));
+    }
+
+    @Test
+    public void deleteByClientId() {
+        Long id = clientRepository.findAll().get(0).getId();
+        Account account = new AccountBuilder()
+                .setType(Account.Type.CURRENT)
+                .setClientId(id)
+                .setBalance(1000L)
+                .setCreationTimestamp(LocalDate.now())
+                .build();
+        repository.save(account);
+        Assert.assertTrue(repository.deleteByClientId(id));
+    }
+
+    @Test
     public void save() {
         Account account = new AccountBuilder()
                 .setType(Account.Type.CURRENT)
@@ -77,13 +127,11 @@ public class AccountRepositoryMySQLTest {
                 .setBalance(10000L)
                 .setCreationTimestamp(LocalDate.now())
                 .build();
-        repository.save(account);
-
         Assert.assertTrue(repository.save(account));
     }
 
     @Test
-    public void updateClient() {
+    public void updateAccount() {
         Account account = new AccountBuilder()
                 .setType(Account.Type.CURRENT)
                 .setClientId(clientRepository.findAll().get(0).getId())
@@ -104,7 +152,7 @@ public class AccountRepositoryMySQLTest {
     }
 
     @Test
-    public void deleteClient() {
+    public void deleteAccount() {
         Account account = new AccountBuilder()
                 .setType(Account.Type.CURRENT)
                 .setClientId(clientRepository.findAll().get(0).getId())

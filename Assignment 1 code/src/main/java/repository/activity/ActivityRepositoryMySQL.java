@@ -61,4 +61,16 @@ public class ActivityRepositoryMySQL implements ActivityRepository {
         }
         return activitiesByEmployee;
     }
+
+    @Override
+    public void removeAll() {
+        String sql = "DELETE from " + ACTIVITY + " where id >= 0";
+
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+    }
 }

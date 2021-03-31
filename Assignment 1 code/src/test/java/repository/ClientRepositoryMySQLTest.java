@@ -2,6 +2,7 @@ package repository;
 
 import database.DatabaseConnectionFactory;
 import database.JDBConnectionWrapper;
+import model.DTO.ClientDTO;
 import model.builder.ClientBuilder;
 import model.entity.Client;
 import org.junit.Assert;
@@ -41,15 +42,8 @@ public class ClientRepositoryMySQLTest {
         long badId = -1L;
         String name = "Gigel";
         Assert.assertNull(repository.findById(badId));
-        Client randomClient = new ClientBuilder()
-                .setName(name)
-                .setIdentityCardNumber("CJ112112")
-                .setPersonalNumericalCode(1651021455123L)
-                .setAddress("In your heart")
-                .setPhoneNumber("0742589216")
-                .setCreationTimestamp(LocalDate.now())
-                .build();
-        repository.save(randomClient);
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
+        repository.save(clientDTO);
         Assert.assertNull(repository.findById(badId));
         List<Client> clients = repository.findAll();
         goodId = clients.get(0).getId();
@@ -59,46 +53,29 @@ public class ClientRepositoryMySQLTest {
     }
 
     @Test
+    public void findByPNC() {
+        long goodPNC = 1991125123456L;
+        long badPNC = 5L;
+        String name = "Gigel";
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
+        repository.save(clientDTO);
+        Assert.assertNull(repository.findByPersonalNumericalCode(badPNC));
+        Client foundClient = repository.findByPersonalNumericalCode(goodPNC);
+        Assert.assertNotNull(foundClient);
+        Assert.assertEquals(foundClient.getName(), name);
+    }
+
+    @Test
     public void save() {
-        Client clientNoName = new ClientBuilder()
-                .setAddress("nowhere")
-                .setPersonalNumericalCode(45L)
-                .setCreationTimestamp(LocalDate.now())
-                .build();
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
 
-        Assert.assertFalse(repository.save(clientNoName));
-
-        Client clientNoPhoneNumber = new ClientBuilder()
-                .setName("name")
-                .setPersonalNumericalCode(45L)
-                .setCreationTimestamp(LocalDate.now())
-                .build();
-
-        Assert.assertFalse(repository.save(clientNoPhoneNumber));
-
-        Client randomClient = new ClientBuilder()
-                .setName("Gigel")
-                .setIdentityCardNumber("CJ112112")
-                .setPersonalNumericalCode(1651021455123L)
-                .setAddress("In your heart")
-                .setPhoneNumber("0742589216")
-                .setCreationTimestamp(LocalDate.now())
-                .build();
-        repository.save(randomClient);
-
-        Assert.assertTrue(repository.save(randomClient));
+        Assert.assertTrue(repository.save(clientDTO));
     }
 
     @Test
     public void updateClient() {
-        repository.save(new ClientBuilder()
-                .setName("Gigel")
-                .setIdentityCardNumber("CJ112112")
-                .setPersonalNumericalCode(1651021455123L)
-                .setAddress("In your heart")
-                .setPhoneNumber("0742589216")
-                .setCreationTimestamp(LocalDate.now())
-                .build());
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
+        repository.save(clientDTO);
         Client client = repository.findAll().get(0);
         String phoneNumber = "112";
         String address = "Cloud 9";
@@ -113,14 +90,8 @@ public class ClientRepositoryMySQLTest {
 
     @Test
     public void deleteClient() {
-        repository.save(new ClientBuilder()
-                .setName("Gigel")
-                .setIdentityCardNumber("CJ112112")
-                .setPersonalNumericalCode(1651021455123L)
-                .setAddress("In your heart")
-                .setPhoneNumber("0742589216")
-                .setCreationTimestamp(LocalDate.now())
-                .build());
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
+        repository.save(clientDTO);
         List<Client> clients = repository.findAll();
         repository.deleteClient(clients.get(0).getId());
         clients = repository.findAll();
@@ -129,14 +100,8 @@ public class ClientRepositoryMySQLTest {
 
     @Test
     public void deleteAll() {
-        repository.save(new ClientBuilder()
-                .setName("Gigel")
-                .setIdentityCardNumber("CJ112112")
-                .setPersonalNumericalCode(1651021455123L)
-                .setAddress("In your heart")
-                .setPhoneNumber("0742589216")
-                .setCreationTimestamp(LocalDate.now())
-                .build());
+        ClientDTO clientDTO = new ClientDTO("Gigel", 1991125123456L, "CJ112112", "here", "0745378559");
+        repository.save(clientDTO);
         repository.deleteAll();
         List<Client> noClients = repository.findAll();
         Assert.assertTrue(noClients.isEmpty());

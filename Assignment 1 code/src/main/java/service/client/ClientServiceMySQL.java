@@ -62,10 +62,10 @@ public class ClientServiceMySQL implements ClientService {
     public Notification<Boolean> updateClient(ClientDTO clientDTO) {
         Notification<Boolean> notification = new Notification<>();
         Client client = clientRepository.findByPersonalNumericalCode(clientDTO.getPersonalNumericalCode());
-        if (!clientDTO.getAddress().isEmpty()) client.setAddress(clientDTO.getAddress());
-        if (!clientDTO.getPhoneNumber().isEmpty()) client.setPhoneNumber(clientDTO.getPhoneNumber());
-        if (!clientDTO.getName().isEmpty()) client.setName(clientDTO.getName());
-        if (!clientDTO.getIdentityCardNumber().isEmpty()) client.setIdentityCardNumber(clientDTO.getIdentityCardNumber());
+        client.setAddress(clientDTO.getAddress());
+        client.setPhoneNumber(clientDTO.getPhoneNumber());
+        client.setName(clientDTO.getName());
+        client.setIdentityCardNumber(clientDTO.getIdentityCardNumber());
 
         ClientValidator clientValidator = new ClientValidator(client);
         boolean clientValid = clientValidator.validate();

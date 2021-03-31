@@ -236,7 +236,7 @@ public class EmployeeView extends JFrame {
 
     public AccountDTO getAccountDTO() {
         return new AccountDTO(Long.parseLong(tfClientPersonalNumericalCode.getText()),
-                (Account.Type) spAccountType.getValue(), tfBalance.getText());
+                Account.Type.valueOf(String.valueOf(spAccountType.getValue())), tfBalance.getText());
     }
 
     public TransferDTO getTransferDTO() {

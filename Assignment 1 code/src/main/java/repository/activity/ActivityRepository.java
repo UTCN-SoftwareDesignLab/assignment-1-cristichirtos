@@ -11,4 +11,6 @@ public interface ActivityRepository {
     boolean createActivity(ActivityDTO activityDTO);
 
     List<Activity> getActivities(ReportDTO reportDTO);
+
+    void removeAll();
 }
